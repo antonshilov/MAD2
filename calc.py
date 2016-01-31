@@ -83,8 +83,8 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
                                                               round(b_coef[3] / intervals[2], 2),
                                                               base_points[2],
                                                               round(b_coef[4] / (intervals[0] * intervals[1]), 2),
-                                                              round(b_coef[5] / (intervals[1] * intervals[3]), 2),
-                                                              round(b_coef[6] / (intervals[0] * intervals[3]), 2),
+                                                              round(b_coef[5] / (intervals[1] * intervals[2]), 2),
+                                                              round(b_coef[6] / (intervals[0] * intervals[2]), 2),
                                                               )
             elif model_type == quad:
                 return '{0} + {1} * (u1 - {2}) ' \
@@ -103,8 +103,8 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
                                                          round(b_coef[3] / intervals[2], 2),
                                                          base_points[2],
                                                          round(b_coef[4] / (intervals[0] * intervals[1]), 2),
-                                                         round(b_coef[5] / (intervals[1] * intervals[3]), 2),
-                                                         round(b_coef[6] / (intervals[0] * intervals[3]), 2),
+                                                         round(b_coef[5] / (intervals[1] * intervals[2]), 2),
+                                                         round(b_coef[6] / (intervals[0] * intervals[2]), 2),
                                                          round(b_coef[7] / (intervals[0] ** 2), 2),
                                                          round(b_coef[8] / (intervals[1] ** 2), 2),
                                                          round(b_coef[9] / (intervals[2] ** 2), 2),
@@ -113,9 +113,9 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
 
 def experiment_number(object_type, model_type, var_number):
     if model_type == 'quad' or object_type == 'quad':
-        return var_number ** 2 + var_number * 2 + 1
+        return (2 ** var_number) + var_number * 2 + 1
     else:
-        return var_number ** 2
+        return (2 ** var_number)
 
 
 # Кол-во коэф. регрессии
@@ -230,10 +230,10 @@ def object_y_params(exp_number, var_number, measure_number, plan_matrix, base_po
         vals = []
         for j in range(var_number):
             vals.append(base_points[j] + plan_matrix[i][j + 1] * intervals[j])
-        for j in range(measure_number):
+        for k in range(measure_number):
             res = calc_function(vals, f)
             res += interference(m, d)
-            y_object[i][j] = res
+            y_object[i][k] = res
         result_object.append(sum(y_object[i]) / measure_number)
     return y_object, result_object
 

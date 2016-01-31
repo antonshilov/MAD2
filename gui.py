@@ -19,18 +19,19 @@ class MainWindowSlots(Ui_Form):
         stud_lin = float(self.stud_lin.text())
         coch_quad = float(self.koh_quad.text())
         coch_lin = float(self.koh_lin.text())
-        var_num = 2
         if self.num2.isChecked():
             var_num = 2
+        else:
+            var_num = 3
         res_lin = calc.build_model(obj_type, calc.lin, var_num, exp_num, base_points, intervals, function,
                                    coch_lin, fish_lin, stud_lin, m, d)
         res_quad = calc.build_model(obj_type, calc.quad, var_num, exp_num, base_points, intervals, function,
                                     coch_quad, fish_quad, stud_quad, m, d)
 
-        self.linear_model.setText(res_lin['model_function'])
+        self.linear_model.setPlainText(res_lin['model_function'])
         self.linear_model_adeq.setText(str(res_lin['is_model_adeq']))
         self.linear_model_adeq_d.setText(str(res_lin['adeq_disp']))
-        self.quad_model.setText(res_quad['model_function'])
+        self.quad_model.setPlainText(res_quad['model_function'])
         self.quad_model_adeq.setText(str(res_quad['is_model_adeq']))
         self.quad_model_adeq_d.setText(str(res_quad['adeq_disp']))
         return None
