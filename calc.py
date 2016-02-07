@@ -26,7 +26,7 @@ def build_model(object_type, model_type, var_number, measure_number, base_points
     model_function = build_model_function(object_type, model_type, var_number, base_points, intervals, b_coef)
     result_model = model_y_params(exp_num, var_number, plan_matrix, base_points, intervals, model_function)
 
-    adeq_disp = adequacy_dispersion(result_object, result_model, exp_num, var_number)
+    adeq_disp = adequacy_dispersion(result_object, result_model, exp_num, var_number, measure_number)
     is_model_adeq, fish = check_fisher(border_fisher, adeq_disp, object_disp_eval)
     return {'model_function': model_function, 'adeq_disp': adeq_disp, 'object_disp_eval': object_disp_eval,
             'is_model_adeq': is_model_adeq, 'f': fish}
@@ -34,19 +34,19 @@ def build_model(object_type, model_type, var_number, measure_number, base_points
 
 def build_model_function(object_type, model_type, var_number, base_points, intervals, b_coef):
     if var_number == 2:
-        if object_type == lin:
+        if object_type == lin and model_type == lin:
             return '{0} + {1} * (u1 - {2}) + {3} * (u2 - {4})'.format(b_coef[0], round(b_coef[1] / intervals[0], 2),
                                                                       base_points[0],
                                                                       round(b_coef[2] / intervals[1], 2),
                                                                       base_points[1])
-        elif object_type == quad:
+        elif object_type == quad and model_type == lin:
             return '{0} + {1} * (u1 - {2}) + {3} * ' \
                    '(u2 - {4}) + {5} *' \
                    ' (u1 - {2})*(u2 - {4})'.format(b_coef[0], round(b_coef[1] / intervals[0], 2), base_points[0],
                                                    round(b_coef[2] / intervals[1], 2),
                                                    base_points[1],
                                                    round(b_coef[3] / (intervals[0] * intervals[1]), 2))
-        elif model_type == quad:
+        elif model_type == quad and object_type == quad:
             return '{0} + {1} * (u1 - {2}) + {3} * ' \
                    '(u2 - {4}) + {5} *' \
                    ' (u1 - {2})*(u2 - {4})' \
@@ -259,11 +259,11 @@ def object_dispersion(y_object, result_object):
     return object_disp
 
 
-def adequacy_dispersion(result_object, result_model, exp_number, var_number):
+def adequacy_dispersion(result_object, result_model, exp_number, var_number, measure_number):
     adeq_disp = 0
     for i in range(exp_number):
         adeq_disp += (result_object[i] - result_model[i]) ** 2
-    return adeq_disp / (exp_number - var_number - 1)
+    return adeq_disp / (exp_number * measure_number - var_number - 1)  # TODO:FIX
 
 
 def regression_coef_model(n, plan_matrix, result_object):
@@ -287,7 +287,7 @@ def check_kochran(border, object_disp):
 def check_student(b_coef, object_disp_eval, exp_number, border):
     insignificant = 0
     for i in range(len(b_coef)):
-        t = abs(b_coef[i]) / sqrt(object_disp_eval * sqrt(exp_number))
+        t = abs(b_coef[i]) / sqrt(object_disp_eval / exp_number)
         if t < border:
             b_coef[i] = 0  # Возможно не зануляется
             insignificant += 1
@@ -296,8 +296,8 @@ def check_student(b_coef, object_disp_eval, exp_number, border):
     return True
 
 
-def check_fisher(border, adeq_disp, obobject_disp_eval):
-    fish = adeq_disp / obobject_disp_eval
+def check_fisher(border, adeq_disp, object_disp_eval):
+    fish = adeq_disp / object_disp_eval
     if fish > border:
         return False, fish
     else:
