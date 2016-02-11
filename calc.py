@@ -277,7 +277,7 @@ def adequacy_dispersion(result_object, result_model, exp_number, var_number, mea
     adeq_disp = 0
     for i in range(exp_number):
         adeq_disp += (result_object[i] - result_model[i]) ** 2
-    return adeq_disp / (exp_number * measure_number - var_number - 1)  # TODO:FIX
+    return adeq_disp / (exp_number * measure_number - var_number - 1)
 
 
 def regression_coef_model(n, plan_matrix, result_object):

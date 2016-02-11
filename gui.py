@@ -1,5 +1,5 @@
-from ui import Ui_Form
 import calc
+from ui import Ui_Form
 
 
 class MainWindowSlots(Ui_Form):
@@ -27,6 +27,12 @@ class MainWindowSlots(Ui_Form):
                                    coch_lin, fish_lin, stud_lin, m, d)
         res_quad = calc.build_model(obj_type, calc.quad, var_num, exp_num, base_points, intervals, function,
                                     coch_quad, fish_quad, stud_quad, m, d)
+        if res_lin == 'disp_not_uniform' or res_lin == 'coef_insign':
+            self.linear_model.setPlainText(res_lin)
+            return None
+        if res_quad == 'disp_not_uniform' or res_quad == 'coef_insign':
+            self.quad_model.setPlainText(res_quad)
+            return None
 
         self.linear_model.setPlainText(res_lin['model_function'])
         self.linear_model_adeq.setText(str(res_lin['is_model_adeq']))
