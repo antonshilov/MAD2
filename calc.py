@@ -1,8 +1,8 @@
+from math import sqrt
 from random import random
 
-import scipy.misc
 import numpy
-from math import sqrt
+import scipy.misc
 
 lin = 'lin'
 quad = 'quad'
@@ -20,6 +20,8 @@ def build_model(object_type, model_type, var_number, measure_number, base_points
         return 'disp_not_uniform'
     object_disp_eval = sum(object_disp) / len(object_disp)
     b_coef = regression_coef_model(reg_coef_num, plan_matrix, result_object)
+    if model_type == quad and object_type == quad:
+        b_coef[0] = ckp(b_coef, exp_num, var_number, plan_matrix)
     # Тут должно быть цкп
     if not check_student(b_coef, object_disp_eval, exp_num, border_student):
         return 'coef_insign'
@@ -32,9 +34,21 @@ def build_model(object_type, model_type, var_number, measure_number, base_points
             'is_model_adeq': is_model_adeq, 'f': fish}
 
 
+def ckp(bcoef, exp_num, var_number, plan_matrix):
+    res = bcoef[0]
+    for i in range(1, var_number + 1):
+        tmp = 0
+        for j in range(exp_num):
+            tmp += plan_matrix[j][i] ** 2
+        tmp /= exp_num
+        tmp *= bcoef[len(bcoef) - var_number - 1 + i]
+        res -= tmp
+    return res
+
+
 def build_model_function(object_type, model_type, var_number, base_points, intervals, b_coef):
     if var_number == 2:
-        if object_type == lin and model_type == lin:
+        if object_type == lin:
             return '{0} + {1} * (u1 - {2}) + {3} * (u2 - {4})'.format(b_coef[0], round(b_coef[1] / intervals[0], 2),
                                                                       base_points[0],
                                                                       round(b_coef[2] / intervals[1], 2),
