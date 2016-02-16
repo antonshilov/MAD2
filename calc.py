@@ -311,10 +311,7 @@ def check_student(b_coef, object_disp_eval, exp_number, border):
 
 
 def check_fisher(border, adeq_disp, object_disp_eval):
-    if adeq_disp > object_disp_eval:
-        fish = adeq_disp / object_disp_eval
-    else:
-        fish = adeq_disp / object_disp_eval
+    fish = adeq_disp / object_disp_eval
     if fish > border:
         return False, fish
     else:

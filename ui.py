@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -227,6 +227,6 @@ class Ui_Form(object):
         self.label_22.setText(_translate("Form", "Лин"))
         self.label_23.setText(_translate("Form", "Квад"))
         self.label_30.setText(_translate("Form", "Дисперсия адекватности"))
-        self.exp_num.setText(_translate("Form", "15"))
+        self.exp_num.setText(_translate("Form", "50"))
         self.num2.setText(_translate("Form", "&2"))
         self.num3.setText(_translate("Form", "&3"))
