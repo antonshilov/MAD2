@@ -9,7 +9,7 @@ quad = 'quad'
 
 
 def build_model(object_type, model_type, var_number, measure_number, base_points, intervals, function, border_cochran,
-                border_fisher, border_student, m, d):
+                border_fisher, border_student, m, d, is_ckp):
     exp_num = experiment_number(object_type, model_type, var_number)
     reg_coef_num = regression_coef_number(object_type, model_type, var_number)
     plan_matrix = get_plan_matrix(object_type, model_type, var_number)
@@ -17,12 +17,13 @@ def build_model(object_type, model_type, var_number, measure_number, base_points
                                               m, d, function)
     object_disp = object_dispersion(y_object, result_object)
     if not check_kochran(border_cochran, object_disp):
-        return 'disp_not_uniform'
+        print('disp_not_uniform')
     object_disp_eval = sum(object_disp) / len(object_disp)
     b_coef = regression_coef_model(reg_coef_num, plan_matrix, result_object)
-    if model_type == quad and object_type == quad:
+
+    if model_type == quad and object_type == quad and is_ckp:
         b_coef[0] = ckp(b_coef, exp_num, var_number, plan_matrix)
-    # Тут должно быть цкп
+
     if not check_student(b_coef, object_disp_eval, exp_num, border_student):
         return 'coef_insign'
     model_function = build_model_function(object_type, model_type, var_number, base_points, intervals, b_coef)
@@ -49,14 +50,16 @@ def ckp(bcoef, exp_num, var_number, plan_matrix):
 def build_model_function(object_type, model_type, var_number, base_points, intervals, b_coef):
     if var_number == 2:
         if object_type == lin:
-            return '{0} + {1} * (u1 - {2}) + {3} * (u2 - {4})'.format(b_coef[0], round(b_coef[1] / intervals[0], 2),
+            return '{0} + {1} * (u1 - {2}) + {3} * (u2 - {4})'.format(round(b_coef[0], 2),
+                                                                      round(b_coef[1] / intervals[0], 2),
                                                                       base_points[0],
                                                                       round(b_coef[2] / intervals[1], 2),
                                                                       base_points[1])
         elif object_type == quad and model_type == lin:
             return '{0} + {1} * (u1 - {2}) + {3} * ' \
                    '(u2 - {4}) + {5} *' \
-                   ' (u1 - {2})*(u2 - {4})'.format(b_coef[0], round(b_coef[1] / intervals[0], 2), base_points[0],
+                   ' (u1 - {2})*(u2 - {4})'.format(round(b_coef[0], 2), round(b_coef[1] / intervals[0], 2),
+                                                   base_points[0],
                                                    round(b_coef[2] / intervals[1], 2),
                                                    base_points[1],
                                                    round(b_coef[3] / (intervals[0] * intervals[1]), 2))
@@ -65,7 +68,8 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
                    '(u2 - {4}) + {5} *' \
                    ' (u1 - {2})*(u2 - {4})' \
                    '+ {6} * (u1 - {2}) ** 2' \
-                   '+ {7} *(u2 - {4}) ** 2'.format(b_coef[0], round(b_coef[1] / intervals[0], 2), base_points[0],
+                   '+ {7} *(u2 - {4}) ** 2'.format(round(b_coef[0], 2), round(b_coef[1] / intervals[0], 2),
+                                                   base_points[0],
                                                    round(b_coef[2] / intervals[1], 2),
                                                    base_points[1],
                                                    round(b_coef[3] / (intervals[0] * intervals[1]), 2),
@@ -75,7 +79,7 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
         if object_type == lin:
             return '{0} + {1} * (u1 - {2}) ' \
                    '+ {3} * (u2 - {4})' \
-                   ' + {5} * (u3 - {6})'.format(b_coef[0],
+                   ' + {5} * (u3 - {6})'.format(round(b_coef[0], 2),
                                                 round(b_coef[1] / intervals[0], 2),
                                                 base_points[0],
                                                 round(b_coef[2] / intervals[1], 2),
@@ -89,7 +93,7 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
                        '+ {5} * (u3 - {6})' \
                        '+ {7} * (u1 - {2})*(u2 - {4})' \
                        '+ {8} * (u2 - {4})*(u3 - {6})' \
-                       '+ {9} + (u1 - {2})*(u3 - {6})'.format(b_coef[0],
+                       '+ {9} + (u1 - {2})*(u3 - {6})'.format(round(b_coef[0], 2),
                                                               round(b_coef[1] / intervals[0], 2),
                                                               base_points[0],
                                                               round(b_coef[2] / intervals[1], 2),
@@ -109,7 +113,7 @@ def build_model_function(object_type, model_type, var_number, base_points, inter
                        '+ {9} * (u1 - {2})*(u3 - {6})' \
                        '+ {10} * (u1 - {2}) ** 2' \
                        '+ {11} * (u2 - {4}) ** 2' \
-                       '+ {12} * (u3 - {6}) ** 2'.format(b_coef[0],
+                       '+ {12} * (u3 - {6}) ** 2'.format(round(b_coef[0], 2),
                                                          round(b_coef[1] / intervals[0], 2),
                                                          base_points[0],
                                                          round(b_coef[2] / intervals[1], 2),
